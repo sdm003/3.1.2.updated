@@ -47,12 +47,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void setRole(User user,Role role) {
-        System.out.println(role.getName());
-        if (role.getName().equals("ADMIN")) {
-            user.setRoles(Collections.singleton(new Role(1L, "ROLE_ADMIN")));
-        } if (role.getName().equals("USER")) {
-            user.setRoles(Collections.singleton(new Role(2L, "ROLE_USER")));
+    public void setRole(User user,Long  role) {
+        if (role == 1L) {
+            user.setRoles(Collections.singleton(new Role(1L, "ADMIN")));
+        }
+        if (role == 2L) {
+            user.setRoles(Collections.singleton(new Role(2L, "USER")));
         }
     }
 

@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void add(User user) {
         user.setPassword(noOpPasswordEncoder.encode(user.getPassword()));
-        user.setRoles(user.getRoles());
+        user.setRoles(user.getRolesSet());
         userDao.add(user);
     }
 
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void setRole(User user,Role role) {
+    public void setRole(User user,Long role) {
         userDao.setRole(user, role);
     }
 }

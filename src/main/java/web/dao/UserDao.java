@@ -12,6 +12,6 @@ public interface UserDao {
     void updateUser(User user);
     void deleteUser(User user);
     User getById(Long id);
-    void setRole(User user, Role role);
+    void setRole(User user, Long role);
 
 }

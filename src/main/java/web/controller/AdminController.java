@@ -3,56 +3,58 @@ package web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
 
+import javax.servlet.http.HttpSession;
+import java.util.List;
+
 @Controller
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/admin")
 public class AdminController {
 
     @Autowired
     private UserService userServiceImpl;
 
-    @GetMapping(value = "/")
-    public String printCars(ModelMap model) {
-        model.addAttribute("users", userServiceImpl.listUsers());
-        return "admin/admin";
-    }
-
     @ResponseBody
     @GetMapping(value = "/findUser/{id}")
-    public User findUser(ModelMap model, @PathVariable long id) {
+    public User findUser(@PathVariable long id) {
         User user = userServiceImpl.getUserById(id);
         return user;
     }
 
+    @ResponseBody
+    @GetMapping("/rest")
+    public List<User> allUsersPage() {
+        List<User> users = userServiceImpl.listUsers();
+        return users;
+    }
 
+    @ResponseBody
     @PostMapping(value = "/edit")
-    public String editUser(@ModelAttribute("user") User user, ModelMap model) {
-        userServiceImpl.setRole(user,user.getRoles().stream().findAny().get());
+    public void editUser(@RequestBody() User user) {
+        userServiceImpl.setRole(user,user.getRolesSet().iterator().next().getId());
         userServiceImpl.updateUser(user);
-        model.addAttribute("users", userServiceImpl.listUsers());
-        return "redirect:/admin/";
     }
 
+    @ResponseBody
     @PostMapping(value = "/add")
-    public String createUser(@ModelAttribute("user") User user, ModelMap model) {
-        userServiceImpl.setRole(user,user.getRoles().stream().findAny().get());
+    public void createUser(@RequestBody User user) {
+        userServiceImpl.setRole(user,user.getRolesSet().iterator().next().getId());
         userServiceImpl.add(user);
-        model.addAttribute("users", userServiceImpl.listUsers());
-        return "redirect:/admin/";
     }
 
-    @GetMapping(value = "/delete/{id}")
-    public String deleteUser(@PathVariable("id") long id, ModelMap model) {
+    @ResponseBody
+    @GetMapping(value = "/delete/")
+    public void deleteUser(@RequestParam("id") long id) {
         userServiceImpl.deleteUser(id);
-        model.addAttribute("users", userServiceImpl.listUsers());
-        return "redirect:/admin/";
     }
 
-
+    @ResponseBody
     @GetMapping("/error")
     public String errorUser(ModelMap model) {
         return "error";
